@@ -1,3 +1,4 @@
+import json
 import pytest
 from unittest.mock import MagicMock
 from app.core.chat_service import ChatService
@@ -42,8 +43,12 @@ def test_chat_exists(chat_service, mock_memory_manager):
 
 
 def test_process_message_valid_response(chat_service, mock_memory_manager):
-    raw_response = {"request_id": "mock_request_id", "response": "Valid response"}
-    mock_memory_manager.run_chat.return_value = raw_response
+    raw_response_mock = MagicMock()
+    raw_response_mock.content = json.dumps({
+        "request_id": "mock_request_id",
+        "response": "Valid response"
+    })
+    mock_memory_manager.run_chat.return_value = raw_response_mock
 
     response = chat_service.process_message(
         chat_id="mock_chat_id",
@@ -51,13 +56,17 @@ def test_process_message_valid_response(chat_service, mock_memory_manager):
         request_id="mock_request_id",
     )
 
-    assert response == raw_response["response"]
+    assert response == "Valid response"
     mock_memory_manager.run_chat.assert_called_once()
 
 
 def test_process_message_invalid_request_id(chat_service, mock_memory_manager):
-    raw_response = {"request_id": "different_request_id", "response": "Response"}
-    mock_memory_manager.run_chat.return_value = raw_response
+    raw_response_mock = MagicMock()
+    raw_response_mock.content = json.dumps({
+        "request_id": "different_request_id",
+        "response": "Response"
+    })
+    mock_memory_manager.run_chat.return_value = raw_response_mock
 
     with pytest.raises(InvalidRequestIdError):
         chat_service.process_message(
@@ -68,9 +77,13 @@ def test_process_message_invalid_request_id(chat_service, mock_memory_manager):
 
 
 def test_process_message_response_too_long(chat_service, mock_memory_manager):
-    long_response = "x" * 300  # Simula una respuesta más larga que MAX_RESPONSE_LENGTH
-    raw_response = {"request_id": "mock_request_id", "response": long_response}
-    mock_memory_manager.run_chat.return_value = raw_response
+    long_response = "x" * 300
+    raw_response_mock = MagicMock()
+    raw_response_mock.content = json.dumps({
+        "request_id": "mock_request_id",
+        "response": long_response
+    })
+    mock_memory_manager.run_chat.return_value = raw_response_mock
 
     with pytest.raises(ResponseTooLongError):
         chat_service.process_message(
@@ -81,8 +94,9 @@ def test_process_message_response_too_long(chat_service, mock_memory_manager):
 
 
 def test_process_message_invalid_response(chat_service, mock_memory_manager):
-    invalid_response = {"invalid_field": "value"}
-    mock_memory_manager.run_chat.return_value = invalid_response
+    invalid_response_mock = MagicMock()
+    invalid_response_mock.content = '{"invalid_field": "value"}'
+    mock_memory_manager.run_chat.return_value = invalid_response_mock
 
     with pytest.raises(InvalidReponseError):
         chat_service.process_message(

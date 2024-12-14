@@ -3,7 +3,7 @@ from langchain.prompts import PromptTemplate
 
 PROMPT_TEMPLATE = PromptTemplate(
     template="""
-Act as an AI assistant that will answer all the questions I ask you.
+Act as an AI Multi-language assistant that will answer all the questions I ask you.
 To do so, you must always follow these rules and never break them:
 
 - Your answers must never exceed {max_response} characters, so be concise in your responses.
