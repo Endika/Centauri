@@ -1,0 +1,25 @@
+services:
+  centauri:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: centauri
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    networks:
+      - centauri_network
+
+  centauri-client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    container_name: centauri-client
+    depends_on:
+      - centauri
+    networks:
+      - centauri_network
+
+networks:
+  centauri_network:
