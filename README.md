@@ -60,3 +60,11 @@ make chat
 # or
 docker exec -it centauri-client wscat -c ws://centauri:8000/chat/
 ```
+
+### 4.1 Chat
+
+```bash
+make chat-flight
+# or
+docker exec -it centauri-client wscat -c ws://centauri:8000/chat/flight_attendant
+```

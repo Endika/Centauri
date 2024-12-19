@@ -8,6 +8,8 @@ services:
       - .env
     ports:
       - "8000:8000"
+    volumes:
+      - chromadb_data:/app/chromadb_data
     networks:
       - centauri_network
 
@@ -23,3 +25,6 @@ services:
 
 networks:
   centauri_network:
+
+volumes:
+  chromadb_data:

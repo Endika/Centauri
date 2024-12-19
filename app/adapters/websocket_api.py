@@ -4,16 +4,16 @@ from uuid import uuid4
 from fastapi import WebSocket
 
 from app.adapters.dtos.errors import ErrorResponseDTO
-from app.core.chat_service import ChatService
 from app.core.exceptions import (ChatNotFoundError, EmptyMessageError,
                                  InvalidReponseError, InvalidRequestIdError,
                                  ResponseTooLongError)
+from app.ports.chat_port import ChatPort
 
 logger = logging.getLogger(__name__)
 
 
 class WebSocketAPI:
-    def __init__(self, chat_service: ChatService):
+    def __init__(self, chat_service: ChatPort):
         self.chat_service = chat_service
 
     async def handle_connection(

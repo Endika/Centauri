@@ -45,3 +45,10 @@ chat: ## Connect to the WebSocket server using wscat
 	else \
 		echo "Error: The container 'centauri-client' is not running."; \
 	fi
+
+chat-flight: ## Connect to the WebSocket server using wscat
+	@if [ $$(docker ps -q -f name=centauri-client) ]; then \
+		docker exec -it centauri-client wscat -c ws://centauri:8000/chat/flight_attendant; \
+	else \
+		echo "Error: The container 'centauri-client' is not running."; \
+	fi
