@@ -38,10 +38,7 @@ async def websocket_endpoint_with_chat_id(websocket: WebSocket, chat_id: str):
     await websocket_api.handle_connection(websocket, chat_id)
 
 
-app.include_router(websocket_router)
-
-
-@app.get(
+@websocket_router.get(
     "/check",
     summary="Health Check",
     description="Verifies that the service is running.",
@@ -57,3 +54,7 @@ async def check():
             "help_center_flight_attendant": "OK" if help_center_flight_attendant else "ERROR",
         },
     }
+
+
+app.include_router(websocket_router)
+
