@@ -1,0 +1,84 @@
+name: Specster
+
+on:
+  issues:
+    types: [labeled]
+  pull_request:
+    types: [closed]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue to process
+        required: true
+      phase:
+        description: Phase to run
+        type: choice
+        options: [spec, build]
+        default: spec
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: specster-issue-${{ github.event.issue.number || github.event.pull_request.number || inputs.issue_number }}
+  cancel-in-progress: false
+
+jobs:
+  spec:
+    if: (github.event_name == 'workflow_dispatch' && inputs.phase != 'build') || github.event.label.name == 'ai-spec'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/create-github-app-token@v3
+        id: app
+        with:
+          client-id: ${{ vars.SPECSTER_CLIENT_ID }}
+          private-key: ${{ secrets.SPECSTER_APP_KEY }}
+      - uses: Endika/specster@v0
+        with:
+          github_token: ${{ steps.app.outputs.token }}
+          issue_number: ${{ inputs.issue_number }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+  build:
+    if: (github.event_name == 'workflow_dispatch' && inputs.phase == 'build') || github.event.label.name == 'ai-build'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/create-github-app-token@v3
+        id: app
+        with:
+          client-id: ${{ vars.SPECSTER_CLIENT_ID }}
+          private-key: ${{ secrets.SPECSTER_APP_KEY }}
+      - uses: Endika/specster@v0
+        with:
+          github_token: ${{ steps.app.outputs.token }}
+          issue_number: ${{ inputs.issue_number }}
+          phase: ${{ inputs.phase || 'build' }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+  cleanup:
+    if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'specster/issue-') && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - uses: actions/create-github-app-token@v3
+        id: app
+        with:
+          client-id: ${{ vars.SPECSTER_CLIENT_ID }}
+          private-key: ${{ secrets.SPECSTER_APP_KEY }}
+      - uses: Endika/specster@v0
+        with:
+          github_token: ${{ steps.app.outputs.token }}

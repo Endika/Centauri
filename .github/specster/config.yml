@@ -1,0 +1,12 @@
+identity:
+  bot_login: specster-endika[bot]
+budget:
+  max_usd_per_issue: 2.0
+  max_usd_per_build: 1.5
+build:
+  tools: {python: "3.12"}
+  setup_command: [sh, -c, "uv venv -q --python 3.12 .venv && uv pip install -q --python .venv/bin/python -r requirements-dev.txt"]
+  test_command: [.venv/bin/python, -m, pytest, -q]
+  preview:
+    serve_command: [.venv/bin/python, -m, uvicorn, main:app, --host, 127.0.0.1, --port, "8000"]
+    ready_url: http://127.0.0.1:8000/openapi.json
