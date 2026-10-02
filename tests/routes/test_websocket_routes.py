@@ -2,13 +2,15 @@ import pytest
 from fastapi.testclient import TestClient
 from starlette.websockets import WebSocketDisconnect
 from app.routes.websocket_routes import app
+from main import app as main_app
 
 client = TestClient(app)
 
 
+@pytest.mark.parametrize("target_app", [app, main_app], ids=["routes_app", "main_app"])
 @pytest.mark.parametrize("endpoint", ["/check"])
-def test_health_check(endpoint):
-    response = client.get(endpoint)
+def test_health_check(endpoint, target_app):
+    response = TestClient(target_app).get(endpoint)
     assert response.status_code == 200
     data = response.json()
 
