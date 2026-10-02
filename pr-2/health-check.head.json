@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "chat_service": "OK",
+    "help_center_flight_attendant": "OK",
+    "memory_manager": "OK"
+  },
+  "message": "Service is running correctly",
+  "status": "OK",
+  "version": "1.0.0"
+}

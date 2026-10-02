@@ -1,0 +1,16 @@
+--- health-check (base)
++++ health-check (head)
+@@ -1,4 +1,11 @@
+-status: 404
++status: 200
+ {
+-  "detail": "Not Found"
++  "dependencies": {
++    "chat_service": "OK",
++    "help_center_flight_attendant": "OK",
++    "memory_manager": "OK"
++  },
++  "message": "Service is running correctly",
++  "status": "OK",
++  "version": "1.0.0"
+ }
